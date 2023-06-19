@@ -31,7 +31,7 @@ clean:
 
 help:
 	@echo '+-+ How To Compile Cain +-+'
-	@echo '(CXX(FLAGS)|EXE|[BW]FLAGS)=... # Build Flags'
-	@echo 'make -j                        # > Simple Build'
+	@echo 'CXX(FLAGS)|EXE|[BW]FLAGS=... # Build Flags'
+	@echo 'make -j                      # > Simple Build'
 
 .PHONY: all clean help

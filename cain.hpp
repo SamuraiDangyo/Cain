@@ -31,7 +31,7 @@ namespace cain {
 
 // Constants
 
-const std::string kVersion            = "Cain 0.1"; // Program version
+const std::string kVersion            = "Cain 0.2"; // Program version
 const std::string kStartPos           = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w 0 1"; // UCI startpos
 constexpr std::size_t kMaxMoves       = 256;      // Max chess moves
 constexpr std::size_t kHashMB         = 256;      // MB
@@ -154,15 +154,12 @@ struct HashEntry { // 10B
 // Variables
 
 std::uint64_t g_black = 0, g_white = 0, g_both = 0, g_empty = 0, g_good = 0, g_stop_search_time = 0,
-  g_nodes = 0, g_pawn_sq = 0, g_pawn_1_moves_w[64]{}, g_pawn_1_moves_b[64]{}, g_pawn_2_moves_w[64]{},
-  g_pawn_2_moves_b[64]{}, g_knight_moves[64]{}, g_king_moves[64]{}, g_bishop_moves[64]{}, g_rook_moves[64]{},
-  g_queen_moves[64]{}, g_pawn_checks_w[64]{}, g_pawn_checks_b[64]{},
-  g_castle_w[2]{}, g_castle_b[2]{}, g_castle_empty_w[2]{}, g_castle_empty_b[2]{}, g_bishop_magic_moves[64][512]{},
-  g_rook_magic_moves[64][4096]{}, g_zobrist_wtm[2]{}, g_r50_positions[kFifty + 1]{}, g_zobrist_board[13][64]{};
+  g_nodes = 0, g_pawn_sq = 0, g_pawn_1_moves_w[64]{}, g_pawn_1_moves_b[64]{}, g_knight_moves[64]{},
+  g_king_moves[64]{}, g_bishop_moves[64]{}, g_rook_moves[64]{}, g_queen_moves[64]{}, g_pawn_checks_w[64]{},
+  g_pawn_checks_b[64]{}, g_zobrist_wtm[2]{}, g_r50_positions[kFifty + 1]{}, g_zobrist_board[13][64]{};
 
-int g_move_overhead = kMoveOverhead, g_level = 100, g_root_n = 0, g_king_w = 0, g_king_b = 0, g_moves_n = 0,
-  g_max_depth = kMaxDepth, g_q_depth = 0, g_depth = 0, g_best_score = 0, g_noise = kNoise, g_last_eval = 0,
-  g_fullmoves = 1, g_rook_w[2]{}, g_rook_b[2]{}, g_nnue_pieces[64]{}, g_nnue_squares[64]{};
+int g_move_overhead = kMoveOverhead, g_level = 100, g_root_n = 0, g_moves_n = 0, g_max_depth = kMaxDepth,
+  g_q_depth = 0, g_depth = 0, g_best_score = 0, g_noise = kNoise, g_last_eval = 0, g_fullmoves = 1;
 
 bool g_wtm = false, g_nullmove_active = false, g_stop_search = false, g_is_pv = false,
      g_game_on = true, g_analyzing = false;
@@ -432,10 +429,6 @@ int TokenNumber(const std::uint32_t nth = 0) {
 // Fen handling
 
 void PutPiece(const int sq, const int p) {
-  // Find kings too
-  if      (p == +6) g_king_w = sq; // K
-  else if (p == -6) g_king_b = sq; // k
-
   // Put piece on board
   g_board->pieces[sq] = p;
 
@@ -502,13 +495,7 @@ void FenReset() {
   g_board_empty = {};
   g_board       = &g_board_empty;
   g_wtm         = true;
-  g_king_w      = g_king_b = 0;
   g_fullmoves   = 1;
-
-  for (const auto i : {0, 1}) {
-    g_castle_w[i] = g_castle_empty_w[i] = g_castle_b[i] = g_castle_empty_b[i] = 0;
-    g_rook_w[i]   = g_rook_b[i] = 0;
-  }
 
   for (auto i = 0; i < 6; ++i) g_board->white[i] = g_board->black[i] = 0;
 }

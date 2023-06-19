@@ -5,6 +5,7 @@ Written in C++20 language
 Licensed under the GPLv3
 Programmed in self-documenting style
 All code in "cain" namespace for easy access
+Build, write: `make -j`. See Makefile
 
 ## SmallChess Rules
 
